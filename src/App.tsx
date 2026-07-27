@@ -28,6 +28,7 @@ type Artwork = {
 }
 
 const artworks: Artwork[] = [
+  { id: 8, title: '六一京剧脸谱', child: '小小艺术家', age: '幼儿园', date: '2026.06.01', category: '手作', medium: '京剧脸谱彩绘', image: '/art/beijing-arts-museum-opera-mask.jpg', color: '#d7e6dc', rotate: '1.5deg', note: '在北京工艺美术馆参加六一儿童节亲子活动，亲手为京剧脸谱涂上鲜艳的颜色。' },
   { id: 7, title: '第一次汇佳幼儿园亲子活动', child: '小小艺术家', age: '幼儿园', date: '2026.07.02', category: '手作', medium: '亲子彩泥拼贴', image: '/art/first-kindergarten-family-activity.jpg', color: '#f2d48c', rotate: '-1.5deg', note: '第一次在汇佳幼儿园参加亲子活动，一起完成了这朵五彩的花。' },
   { id: 1, title: '春天的秘密花园', child: '朵朵', age: '5岁', date: '2026.04.18', category: '绘画', medium: '水彩 + 蜡笔', image: '/art/garden.svg', color: '#f7c8db', rotate: '-2deg', note: '“蝴蝶在和花朵说悄悄话。”' },
   { id: 2, title: '我会飞', child: '安安', age: '6岁', date: '2026.05.02', category: '绘画', medium: '油画棒', image: '/art/fly.svg', color: '#d4e8ff', rotate: '2deg', note: '一架装满彩虹和云朵的飞机。' },
