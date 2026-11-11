@@ -1,107 +1,88 @@
-# 小小星光 · 儿童作品集
+# 小念的画廊
 
-一个面向儿童创作的数字作品展厅，用来温柔地收藏、展示和回顾孩子的绘画、手作与影像作品。
+小念画的画、做的手工，按做出来的日子夹在一根晾衣绳上。每件作品有一段「小念讲」，点一下就用小念的声音念出来。作品是仓库里的 TypeScript 数据和处理过的照片，推到 `main` 就发布到 GitHub Pages——没有后端，没有上传表单。
 
-> 每一笔、每一次尝试和每个天马行空的想法，都值得被好好看见。
+线上地址：<https://handsondad.github.io/kids-gallery/>
 
-## 设计理念
+和 [小念家的漫画书](https://github.com/handsondad/storyverse)、[身体奇遇记](https://github.com/handsondad/bodyverse) 是同一个系列：同一个小念，同一套颜色、字体、配音和首页晾衣绳。同一天在漫画书里有故事的作品，会链到那个故事。
 
-“小小星光”并不以作品是否精致或写实作为标准，而是将作品视为孩子表达世界的方式。界面采用柔和留白、手帐相框、轻微错落排版和童趣色彩，让浏览体验像走进一间会慢慢长大的小小美术馆。
+## 页面
 
-## 已实现功能
+| 路由 | 看什么 |
+|---|---|
+| `#/` | 时间绳：作品像拍立得一样夹在绳子上，跨年挂年份旗；点一件，下面出预览和「小念讲」 |
+| `#/work/<id>` | 一件作品的大图、日子、谁做的、「▶ 听小念讲」；← → 或左右滑动换一件，Esc 回首页 |
 
-- **作品墙**：以错落画廊布局呈现儿童作品。
-- **作品分类**：可筛选全部、绘画、手作和影像作品。
-- **影像标识**：影像作品带有醒目的播放标识。
-- **作品详情**：点击作品可查看日期、创作媒介、作者信息和孩子的创作话语。
-- **喜欢作品**：支持在作品墙和详情页标记喜欢。
-- **响应式布局**：针对桌面与手机屏幕优化展示和导航。
-- **本地示例素材**：使用项目内的 SVG 插画作为示例作品，离线预览也能完整展示。
+现在收着：
 
-## 技术栈
+| 作品 | 日子 | 谁做的 |
+|---|---|---|
+| 京剧脸谱 | 2026-06-01 六一儿童节 | 小念、爸爸和妈妈（漫画书里有那天的《走错美术馆》） |
+| 五彩的花 | 2026-07-02 幼儿园亲子活动 | 小念和妈妈 |
 
-- React 19
-- TypeScript
-- Vite
-- CSS（原生响应式样式，不依赖 UI 框架）
-- Lucide React 图标
+## 本地运行
 
-## 快速开始
-
-### 环境要求
-
-- Node.js 20 或更高版本
-- npm 10 或更高版本
-
-### 安装依赖
+需要 Node.js 22+。
 
 ```bash
 npm install
-```
-
-### 本地开发
-
-```bash
 npm run dev
 ```
 
-启动后，在终端提示的本地地址打开网站。默认地址通常为 `http://localhost:5173`。
+| 命令 | 作用 |
+|---|---|
+| `npm run dev` | 开发服务器 |
+| `npm run typecheck` | 类型检查 |
+| `npm test` | 测试 |
+| `npm run check` | 检查作品内容、照片和配音 |
+| `npm run work:new -- <id> [照片]` | 新收一件作品 |
+| `npm run photo -- <id> <照片>` | 换照片（转正、缩小、去掉拍摄信息） |
+| `npm run voice` | 给「小念讲」配音（edge-tts，只配新的和改过字的） |
+| `npm run font` | 重新截取字体子集 |
+| `npm run snapshot` | 截成 PNG（加 `--width 390` 看手机） |
+| `npm run build` | 生产构建 |
 
-### 构建生产版本
+只看页面、改代码用不着别的。收新作品时还要：
 
-```bash
-npm run build
-```
+- 本机的 Edge 或 Chrome（处理照片、截图）
+- `python -m pip install fonttools`（`npm run font`）
+- `python -m pip install edge-tts` 和 ffmpeg（`npm run voice`，要联网）
 
-构建后的静态文件会生成在 `dist` 目录中。
+## 收一件新作品
 
-### 预览生产构建
+见 [AGENTS.md](AGENTS.md) 和 [skills/kids-gallery-curate/SKILL.md](skills/kids-gallery-curate/SKILL.md)。
 
-```bash
-npm run preview
-```
+简单说：
 
-## 项目结构
+1. 照片放 `private/`（不进仓库），确认没有脸、校名、门牌
+2. `npm run work:new -- <id> private/<照片>.jpg`
+3. 和小念聊，记进 `src/works/<id>/notes.md`；写 `work.ts`，`npm run check -- <id>`
+4. 写「小念讲」（`intro`），念给小念听，他点头了 `npm run voice -- <id>`
+5. `npm run font`，`npm run snapshot -- home <id>` 看图
+6. `npm run typecheck && npm test && npm run build`，推到 `main`
 
-```text
-kids-gallery/
-├── public/
-│   └── art/                 # 本地示例作品 SVG
-├── src/
-│   ├── App.tsx              # 页面、作品数据与交互逻辑
-│   ├── main.tsx             # React 应用入口
-│   └── styles.css           # 全局与响应式样式
-├── index.html
-├── package.json
-└── vite.config.ts
-```
+`said` 只放小念的原话；`intro` 可以由大人照着真事、用他的口吻代写。
 
-## 替换为真实作品
+## 部署
 
-当前作品数据集中在 `src/App.tsx` 的 `artworks` 数组中。接入真实数据时，可将每件作品扩展为以下信息：
+推送到 `main` 后，`.github/workflows/deploy.yml` 会跑测试、检查、构建，并发布到 GitHub Pages。仓库 Settings → Pages 的 Source 选 **GitHub Actions**。
 
-- 作品名称、作者昵称与年龄
-- 创作日期、作品分类、创作媒介
-- 图片或视频地址
-- 孩子的作品说明或创作故事
-- 作品点赞、标签、家庭成员留言等互动数据
+## 目录
 
-建议后续将作品数据迁移到后端服务或内容管理系统，并为上传内容提供家长授权、访问权限控制和隐私保护机制。
+| 位置 | 内容 |
+|---|---|
+| `src/works/` | 作品数据（`work.ts`）和聊天记录（`notes.md`） |
+| `src/work/` | 作品类型、词表、配音指纹 |
+| `src/pages/` | 首页时间绳、作品页、「小念讲」气泡 |
+| `public/works/` | 处理过的照片 |
+| `public/voice/` | 「小念讲」的配音 |
+| `public/fonts/` | 站酷快乐体子集 |
+| `tools/` | 新建作品、处理照片、配音、截图、字体 |
+| `tests/` | 测试和内容检查器 |
+| `skills/` | 给代码助手的收作品说明 |
 
-## 后续可扩展方向
+旧的「小小星光」版本（虚构的示例作品、浏览器里上传）在提交 `a2d486d` 及之前的历史里。
 
-- 家长上传图片和视频、自动生成封面
-- 作品按孩子、年份、主题或成长阶段归档
-- 家庭成员评论与共同收藏
-- 私密相册、分享链接与访问密码
-- 年度作品册导出和成长时间轴
-- 视频播放、字幕和作品录音说明
+## 许可
 
-## 可用脚本
-
-| 命令 | 用途 |
-| --- | --- |
-| `npm run dev` | 启动本地开发服务 |
-| `npm run build` | 执行 TypeScript 检查并构建生产文件 |
-| `npm run preview` | 本地预览生产构建 |
-| `npm run lint` | 运行 ESLint 检查 |
+代码 MIT（待补完整声明）。字体：站酷快乐体（OFL），子集在 `public/fonts/`；配音由微软 Edge 在线语音生成，只按家庭和非商业用途，见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。作品照片版权归小念家，家庭和非商业使用。署名用角色名（小念、爸爸、妈妈），不要写家里人的真名。

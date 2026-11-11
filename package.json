@@ -1,29 +1,31 @@
 {
-  "name": "little-lights-gallery",
+  "name": "kids-gallery",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node tests/gallery-rules.mjs",
+    "snapshot": "node tools/snapshot.mjs",
+    "work:new": "node tools/new-work.mjs",
+    "photo": "node tools/photo.mjs",
+    "font": "node tools/font/subset.mjs",
+    "voice": "node tools/voice.mjs"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "vite": "latest",
-    "typescript": "~5.9.3",
-    "react": "latest",
-    "react-dom": "latest",
-    "lucide-react": "^0.468.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "eslint": "latest",
-    "eslint-plugin-react-hooks": "latest",
-    "eslint-plugin-react-refresh": "latest",
-    "globals": "latest",
-    "typescript-eslint": "latest"
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.4.1",
+    "puppeteer-core": "^24.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11"
   }
 }

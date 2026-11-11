@@ -1,32 +1,20 @@
-# Dependencies
 node_modules/
-
-# Production build output
 dist/
-
-# Local environment files
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+*.log
 .env
 .env.*
-!.env.example
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+# snapshot 工具的输出，给 agent 自查用，不进仓库
+snapshots/
 
-# Editor and OS files
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# npm run font 自动下载的完整字体，只留截出来的子集
+tools/font/.cache/
+
+# 原图、拍到脸或校名的照片先放这里，不进仓库；处理好的才放 public/works/
+private/
+
+.vscode/
 .DS_Store
-Thumbs.db
-
-# TypeScript build information
-*.tsbuildinfo
