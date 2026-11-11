@@ -3,7 +3,7 @@ import type { Work } from "../work/types.ts";
 import { KIND_NAMES, creditLine } from "../work/vocab.ts";
 import { WORKS, photoUrl, storyUrl } from "../works/index.ts";
 import { IntroBubble } from "./IntroBubble.tsx";
-import { ago, fullDate, neighbors } from "./timeline.ts";
+import { neighbors, whenAgo, whenLong } from "./timeline.ts";
 
 /** 手指横着划过这么远才算翻页，免得上下滚动时误翻 */
 const SWIPE = 60;
@@ -58,9 +58,9 @@ export function WorkPage({ work }: { work: Work }) {
 
         <section className="plaque">
           <p className="when">
-            {fullDate(work.when.date)}
+            {whenLong(work.when)}
             {work.when.label && <span className="chip">{work.when.label}</span>}
-            <span className="ago">{ago(work.when.date, new Date())}</span>
+            <span className="ago">{whenAgo(work.when, new Date())}</span>
           </p>
           <IntroBubble work={work} />
           <p>{work.about}</p>

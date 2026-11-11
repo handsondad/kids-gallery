@@ -45,6 +45,7 @@ export function checkWork(work) {
   } else if (Date.parse(day) > Date.now() + 86400000) {
     say("时间", `${day} 还没到`);
   }
+  if (work.when?.approx !== undefined && typeof work.when.approx !== "boolean") say("时间", "when.approx 只能写 true（只记得大概）");
   if (work.when?.label && chars(work.when.label) > LIMITS.label) say("时间", `when.label 不超过 ${LIMITS.label} 个字`);
 
   if (!KINDS.includes(work.kind)) say("种类", `没有 ${work.kind}，只能是 ${KINDS.join(" / ")}`);
@@ -52,7 +53,7 @@ export function checkWork(work) {
   const by = work.by ?? [];
   if (!by.includes("nian")) say("署名", "by 里要有小念：这是小念的画廊");
   for (const id of by) {
-    if (!CREATOR_IDS.includes(id)) say("署名", `by 里不能写「${id}」，只能是小念、爸爸、妈妈`);
+    if (!CREATOR_IDS.includes(id)) say("署名", `by 里不能写「${id}」，只能是 ${CREATOR_IDS.join(" / ")}`);
   }
   if (new Set(by).size !== by.length) say("署名", "by 里有重复的人");
 

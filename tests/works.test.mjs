@@ -45,4 +45,5 @@ test("署名：一个人、两个人、三个人", () => {
   assert.equal(creditLine(["nian"]), "小念做的");
   assert.equal(creditLine(["mom", "nian"]), "小念和妈妈一起做的");
   assert.equal(creditLine(["nian", "dad", "mom"]), "小念、爸爸和妈妈一起做的");
+  assert.equal(creditLine(["laoye", "nian"]), "小念和姥爷一起做的");
 });

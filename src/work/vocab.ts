@@ -4,12 +4,12 @@ export type Kind = (typeof KINDS)[number];
 export const KIND_NAMES: Record<Kind, string> = { draw: "画画", craft: "手工" };
 
 /**
- * 能署名的人：和《小念家的漫画书》一样，只有小念、爸爸、妈妈。
+ * 能署名的人：小念、爸爸、妈妈，还有常陪他动手的姥爷。只写称呼，不写真名。
  * 画廊是小念的，所以每件作品都要有小念；大人帮忙了才加上。
  */
-export const CREATOR_IDS = ["nian", "dad", "mom"] as const;
+export const CREATOR_IDS = ["nian", "dad", "mom", "laoye"] as const;
 export type CreatorId = (typeof CREATOR_IDS)[number];
-export const CREATOR_NAMES: Record<CreatorId, string> = { nian: "小念", dad: "爸爸", mom: "妈妈" };
+export const CREATOR_NAMES: Record<CreatorId, string> = { nian: "小念", dad: "爸爸", mom: "妈妈", laoye: "姥爷" };
 
 /** 「小念做的」「小念和妈妈一起做的」「小念、爸爸和妈妈一起做的」 */
 export function creditLine(by: readonly CreatorId[]): string {

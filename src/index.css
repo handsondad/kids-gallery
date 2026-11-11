@@ -70,16 +70,23 @@ button, a { font-family: inherit; }
 
 /* 首页时间绳：位置在 src/pages/timeline.ts 里算好，这里只管样子 */
 .line {
-  margin-top: 22px; padding: 10px 0 6px; border-radius: var(--radius-md);
+  position: relative; margin-top: 22px; padding: 10px 0 6px; border-radius: var(--radius-md);
   background: linear-gradient(180deg, #e9f5ff 0%, #fdf6ec 70%, #f6ead8 100%);
   border: 3px solid var(--border-color); box-shadow: var(--shadow-md);
 }
-.line-scroll { overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
-.line-track { position: relative; height: 296px; margin: 0 auto; }
+/* 能左右滑，但不要滚动条 */
+.line-scroll {
+  overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none;
+  overscroll-behavior-x: contain; cursor: grab; user-select: none; -webkit-user-select: none;
+}
+.line-scroll::-webkit-scrollbar { display: none; }
+.line-scroll.dragging { cursor: grabbing; }
+.line-scroll.dragging .tag, .line-scroll.dragging .banner { pointer-events: none; }
+.line-track { position: relative; margin: 0 auto; }
 .rope { position: absolute; left: 0; top: 0; overflow: visible; }
 .rope path { fill: none; stroke: #9a6b3f; stroke-width: 4; stroke-linecap: round; }
 .pole {
-  position: absolute; top: 14px; width: 18px; height: 272px; border-radius: 9px;
+  position: absolute; top: 14px; width: 18px; border-radius: 9px;
   background: linear-gradient(90deg, #c98b52, #a86e3c); border: 3px solid var(--ink);
 }
 .pole::before {
@@ -87,12 +94,48 @@ button, a { font-family: inherit; }
   border-radius: 7px; background: #c98b52; border: 3px solid var(--ink);
 }
 
-.year-flag {
-  position: absolute; height: 34px; padding-top: 6px; text-align: center; font-size: 18px; color: #fff;
-  background: var(--accent-blue); border: 3px solid var(--ink); border-top-width: 0;
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+/* 两头还有东西时，边上淡出一点 */
+.line::before, .line::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 56px; z-index: 2; pointer-events: none;
+  opacity: 0; transition: opacity 200ms;
+}
+.line::before { left: 0; border-radius: var(--radius-md) 0 0 var(--radius-md); background: linear-gradient(90deg, #f2f4f4, rgba(242, 244, 244, 0)); }
+.line::after { right: 0; border-radius: 0 var(--radius-md) var(--radius-md) 0; background: linear-gradient(270deg, #f2f4f4, rgba(242, 244, 244, 0)); }
+.line.more-left::before, .line.more-right::after { opacity: 1; }
+
+/* 绳子上方：现在打开到哪一年、哪一月 */
+.crumbs {
+  position: relative; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+  padding: 2px 16px 0; font-size: 16px;
+}
+.crumbs button {
+  border: 0; background: rgba(255, 255, 255, 0.6); font: inherit; padding: 2px 12px; border-radius: 999px;
+  cursor: pointer; color: var(--ink);
+}
+.crumbs button:hover { background: #fff; }
+.crumbs button.here { background: #fff; box-shadow: 0 0 0 2px var(--accent-orange); }
+.crumbs .sep { color: var(--text-muted); }
+
+/* 展开的年、月：一面三角旗，点它收起。年是蓝的，月是橙的 */
+.banner {
+  position: absolute; padding: 0; border: 0; background: none; cursor: pointer; font: inherit; text-align: center;
+  filter: drop-shadow(0 4px 0 rgba(61, 48, 39, 0.18)); transition: translate 200ms;
+}
+.banner-cloth {
+  display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 8px 4px 26px; color: #fff;
+  background: var(--accent-blue); border: 3px solid var(--ink); border-top-width: 0; line-height: 1.2;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%);
   transform-origin: top center; animation: sway 5s ease-in-out infinite alternate;
 }
+.banner.month .banner-cloth { background: #f39a4a; }
+.banner-name { font-size: 20px; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15); }
+.banner-count { font-size: 13px; opacity: 0.9; }
+.banner-fold { margin-top: 4px; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.25); }
+.banner:hover .banner-fold, .banner.on .banner-fold { background: rgba(255, 255, 255, 0.5); }
+.banner.on { translate: 0 4px; }
+.banner.on .banner-cloth { animation: none; }
+.banner:focus-visible { outline: none; }
+.banner:focus-visible .banner-cloth { outline: 3px solid var(--focus); }
 
 .tag {
   position: absolute; padding: 0; border: 0; background: none; cursor: pointer;
@@ -124,9 +167,30 @@ button, a { font-family: inherit; }
 }
 .tag:focus-visible { outline: none; }
 .tag:focus-visible .card { outline: 3px solid var(--focus); outline-offset: 3px; }
+/* 收着的年、月：一叠拍立得，最上面一张拼着最近的几张照片 */
+.bundle .card { box-shadow: 6px 6px 0 -3px #fffaf2, 6px 6px 0 0 var(--ink), 0 10px 0 rgba(61, 48, 39, 0.15); }
+.bundle .stack {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px; width: 118px; height: 118px; margin-bottom: 6px;
+  padding: 3px; border-radius: 4px; background: #fff; box-shadow: 0 1px 0 rgba(61, 48, 39, 0.25);
+}
+.mini { display: block; width: 100%; height: 100%; min-height: 0; object-fit: cover; border-radius: 3px; background: #fffaf0; }
+.bundle .stack .mini:only-child { grid-column: span 2; grid-row: span 2; }
+.bundle-name { font-size: 22px; line-height: 1.1; color: #e0702a; }
+.bundle-count { font-size: 15px; line-height: 1.3; color: var(--text-secondary); }
+.bundle.year .bundle-name { color: var(--accent-blue); }
+.bundle:hover .card { translate: 0 -4px; }
 @keyframes sway { from { rotate: -1.8deg; } to { rotate: 1.8deg; } }
 
-.line-hint { margin: 0; text-align: center; font-size: 14px; color: var(--text-muted); }
+/* 窄屏：挂件小一号（和 timeline.ts 的 COMPACT 对应） */
+.line.compact .tag .card { padding: 9px 7px 8px; }
+.line.compact .tag .thumb, .line.compact .bundle .stack { width: 88px; height: 88px; margin-bottom: 4px; }
+.line.compact .tag .day, .line.compact .bundle-name { font-size: 18px; }
+.line.compact .tag .name { font-size: 15px; }
+.line.compact .bundle-count { font-size: 13px; }
+.line.compact .banner-name { font-size: 17px; }
+
+.line-hint { position: relative; z-index: 3; margin: 0; padding: 0 12px; text-align: center; font-size: 14px; color: var(--text-muted); }
+.line.compact .line-hint { font-size: 12px; }
 
 .preview {
   display: grid; grid-template-columns: minmax(200px, 340px) 1fr; gap: 24px; align-items: center;
@@ -143,6 +207,21 @@ button, a { font-family: inherit; }
 .preview-info h2 { margin: 2px 0 6px; font-size: 32px; font-weight: 400; color: var(--ink); }
 .preview-info p { margin: 0 0 8px; color: var(--text-secondary); font-size: 17px; }
 .preview-info .by { font-size: 15px; }
+/* 选中一年、一月：拼一墙小照片，下面列着里面的月份和作品 */
+.group-preview .mosaic {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px; border-radius: 6px;
+  background: #fff; box-shadow: 0 6px 18px rgba(93, 78, 55, 0.22); transform: rotate(-1.5deg);
+}
+.group-preview .mosaic .mini { aspect-ratio: 1; height: auto; }
+.group-preview .kids { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 16px; }
+.group-preview .kid {
+  padding: 4px 12px; border-radius: 999px; font: inherit; font-size: 16px; text-decoration: none; cursor: pointer;
+  color: var(--ink); background: #fff; border: 2px solid var(--border-color);
+}
+.group-preview .kid.more { background: #fff4e0; border-color: #f39a4a; }
+.group-preview .kid b { color: #e0702a; font-weight: 400; margin-left: 2px; }
+.group-preview .kid:hover { border-color: var(--accent-orange); }
+.group-preview .btn { border: 0; cursor: pointer; font: inherit; }
 
 .when { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: #e0702a; font-size: 18px; }
 .chip { padding: 0 10px; border-radius: 999px; background: #ffe3c2; color: var(--ink); font-size: 14px; }
@@ -207,5 +286,5 @@ button, a { font-family: inherit; }
 
 /* 放在最后：上面各处的 animation 都要被它盖住 */
 @media (prefers-reduced-motion: reduce) {
-  .tag .card, .year-flag, .preview, .frame { animation: none; }
+  .tag .card, .banner-cloth, .preview, .frame { animation: none; }
 }

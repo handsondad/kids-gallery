@@ -24,11 +24,13 @@ export type Work = {
     readonly date: string;
     /** 那天是什么日子，比如「六一儿童节」，≤8 个字 */
     readonly label?: string;
+    /** 只记得大概：date 只用来排先后，页面上只写到「几月前后」 */
+    readonly approx?: boolean;
   };
   readonly kind: Kind;
   /** 用什么做的，比如「水彩 + 蜡笔」，≤10 个字 */
   readonly medium: string;
-  /** 谁做的：必须有小念，大人一起动手了才加 dad / mom */
+  /** 谁做的：必须有小念，大人一起动手了才加 dad / mom / laoye */
   readonly by: readonly CreatorId[];
   /** public/works/<id>/ 下的文件名，一般是 photo.jpg */
   readonly photo: string;

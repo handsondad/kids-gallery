@@ -71,13 +71,14 @@ const work: Work = {
   when: { date: "2026-09-12", label: "下雨天" },    // 做出来的那天；label ≤8 字
   kind: "draw",                          // draw 画画 | craft 手工
   medium: "油画棒",                      // ≤10 字
-  by: ["nian"],                          // 必须有 nian；大人一起动手才加 dad / mom
+  by: ["nian"],                          // 必须有 nian；大人一起动手才加 dad / mom / laoye
   photo: "photo.jpg",
   alt: "蓝色的纸上一条彩色条纹的大鱼，周围有泡泡",  // ≤40 字，照片上是什么
   // story: "wrong-museum",              // 同一天漫画书里有故事才写
 };
 ```
 
+- 大人只记得大概哪个月：`when` 加 `approx: true`，页面只显示「2026年10月前后」；`date` 填那个月里一个说得过去的日子（决定在绳子上的先后），怎么定的写进 notes.md 的「日子」。记起真的那天再改回来、去掉 `approx`
 - 公开场所可以写（美术馆、公园）；学校、幼儿园、公司的名字写进 notes.md 的「不写的」，不进 `work.ts`
 - 同一天在《小念家的漫画书》里有故事，`story` 写那个故事的 id，作品页会出现「那天的故事」按钮
 
