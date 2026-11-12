@@ -3,16 +3,23 @@ import type { Work } from "../work/types.ts";
 import { KIND_NAMES, creditLine } from "../work/vocab.ts";
 import { WORKS, photoUrl, storyUrl } from "../works/index.ts";
 import { IntroBubble } from "./IntroBubble.tsx";
-import { neighbors, whenAgo, whenLong } from "./timeline.ts";
+import { buildTree, neighbors, pathToWork, whenAgo, whenLong } from "./timeline.ts";
+import { wallMemory } from "./wallMemory.ts";
 
 /** 手指横着划过这么远才算翻页，免得上下滚动时误翻 */
 const SWIPE = 60;
+const TREE = buildTree(WORKS);
 
 export function WorkPage({ work }: { work: Work }) {
-  const { prev, next } = neighbors(WORKS, work.id);
+  const { prev, next, index, total } = neighbors(WORKS, work.id);
   const prevHref = prev ? `#/work/${prev.id}` : null;
   const nextHref = next ? `#/work/${next.id}` : null;
   const touch = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    wallMemory.open = pathToWork(TREE, work.id);
+    wallMemory.picked = `w:${work.id}`;
+  }, [work.id]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -65,7 +72,7 @@ export function WorkPage({ work }: { work: Work }) {
           <IntroBubble work={work} />
           <p>{work.about}</p>
           {work.said && <blockquote className="said">「{work.said}」<cite>—— 小念</cite></blockquote>}
-          <p className="by">{KIND_NAMES[work.kind]} · {work.medium}</p>
+          <p className="by"><span className="mobile-by">{creditLine(work.by)} · </span>{KIND_NAMES[work.kind]} · {work.medium}</p>
           {work.story && (
             <a className="btn ghost" href={storyUrl(work.story)}>📚 那天的故事，在漫画书里</a>
           )}
@@ -73,6 +80,7 @@ export function WorkPage({ work }: { work: Work }) {
 
         <div className="pager">
           {prevHref ? <a className="btn ghost" href={prevHref}>上一件</a> : <button className="btn ghost" disabled>上一件</button>}
+          <span className="count">{index} / {total}</span>
           {nextHref ? <a className="btn" href={nextHref}>下一件</a> : <a className="btn" href="#/">回画廊</a>}
         </div>
         <p className="hint">左右滑动或按 ← → 换一件，Esc 回画廊</p>

@@ -22,9 +22,9 @@ export type LineSize = {
   readonly rowH: number;
 };
 
-export const LINE: LineSize = { tagW: 150, bundleW: 150, flagW: 88, gap: 26, pad: 64, sag: 36, top: 28, rowH: 296 };
+export const LINE: LineSize = { tagW: 150, bundleW: 150, flagW: 88, gap: 26, pad: 64, sag: 36, top: 28, rowH: 312 };
 /** 手机上挂件小一号 */
-export const COMPACT: LineSize = { tagW: 116, bundleW: 116, flagW: 72, gap: 14, pad: 40, sag: 24, top: 24, rowH: 250 };
+export const COMPACT: LineSize = { tagW: 116, bundleW: 116, flagW: 72, gap: 14, pad: 40, sag: 24, top: 24, rowH: 262 };
 export const sizeFor = (room: number): LineSize => (room > 0 && room < 560 ? COMPACT : LINE);
 
 const TILTS = [-3, 2.5, -1.5, 3, -2.5, 1.5];
@@ -138,12 +138,12 @@ export function layoutLine(slots: readonly TreeSlot[], room = 0, size: LineSize 
   return { items, width };
 }
 
-/** 上一件、下一件：按时间绳上的顺序 */
-export function neighbors(works: readonly Work[], id: string): { prev?: Work; next?: Work } {
+/** 上一件、下一件和第几件：按时间绳上的顺序 */
+export function neighbors(works: readonly Work[], id: string): { prev?: Work; next?: Work; index: number; total: number } {
   const sorted = [...works].sort(byDate);
   const i = sorted.findIndex((w) => w.id === id);
-  if (i < 0) return {};
-  return { prev: sorted[i - 1], next: sorted[i + 1] };
+  if (i < 0) return { index: 0, total: sorted.length };
+  return { prev: sorted[i - 1], next: sorted[i + 1], index: i + 1, total: sorted.length };
 }
 
 /** 「2025年6月1日」 */

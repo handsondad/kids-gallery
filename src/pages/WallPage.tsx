@@ -7,6 +7,7 @@ import {
   buildTree, byDate, COMPACT, findGroup, layoutLine, pathTo, pathToWork, sizeFor, toggleOpen, visibleSlots,
   whenAgo, whenLong, whenShort, type Group, type TreeSlot,
 } from "./timeline.ts";
+import { wallMemory } from "./wallMemory.ts";
 
 /** 鼠标按住挪过这么多像素才算拖绳子，不算点 */
 const DRAG = 5;
@@ -19,15 +20,6 @@ const groupOfKey = (k: string | null) => (k?.startsWith("g:") ? findGroup(TREE, 
 const workOfKey = (k: string | null) => (k?.startsWith("w:") ? WORKS.find((w) => w.id === k.slice(2)) : undefined);
 /** 「2026年9月」「2026年」 */
 const groupTitle = (g: Group) => (g.level === "month" ? `${g.key.slice(0, 4)}年${g.name}` : g.name);
-
-/** 看完大图回来，绳子还是原来展开的样子 */
-function useSaved<T>(name: string, fallback: T) {
-  const [value, setValue] = useState<T>(() => {
-    try { return JSON.parse(sessionStorage.getItem(name) ?? "") as T; } catch { return fallback; }
-  });
-  useEffect(() => { sessionStorage.setItem(name, JSON.stringify(value)); }, [name, value]);
-  return [value, setValue] as const;
-}
 
 export function WallPage() {
   const scroller = useRef<HTMLDivElement>(null);
@@ -42,19 +34,24 @@ export function WallPage() {
   }, []);
   const size = sizeFor(room);
 
-  // 一进来展开到最近的那一件
-  const [savedOpen, setOpen] = useSaved<string[]>("gallery-open", LATEST ? pathToWork(TREE, LATEST.id) : []);
-  const open = useMemo(() => savedOpen.filter((k) => findGroup(TREE, k)), [savedOpen]);
+  // 一进来展开到最近的那一件；看大图回来，绳子还是刚才展开、选中的样子
+  const [rawOpen, setOpen] = useState<string[]>(() => wallMemory.open ?? (LATEST ? pathToWork(TREE, LATEST.id) : []));
+  const open = useMemo(() => rawOpen.filter((k) => findGroup(TREE, k)), [rawOpen]);
   const { items, width } = useMemo(() => layoutLine(visibleSlots(TREE, open), room, size), [open, room, size]);
   const keys = items.map((it) => slotKey(it.slot));
 
-  const [picked, setPicked] = useState<string | null>(LATEST ? `w:${LATEST.id}` : null);
+  const [picked, setPicked] = useState<string | null>(() => wallMemory.picked ?? (LATEST ? `w:${LATEST.id}` : null));
   const [peek, setPeek] = useState<string | null>(null);
   const fallback = open.length ? `g:${open[open.length - 1]}` : keys[keys.length - 1];
   const chosen = picked && keys.includes(picked) ? picked : fallback ?? null;
   const shown = peek ?? chosen;
   const shownGroup = groupOfKey(shown);
   const shownWork = workOfKey(shown);
+
+  useEffect(() => {
+    wallMemory.open = open;
+    wallMemory.picked = chosen ?? undefined;
+  }, [open, chosen]);
 
   // 跟着刚打开的那一层走：上面几层的旗子放得下就一起露出来，看得出是从哪里一路点进来的
   const lastOpen = open[open.length - 1];
@@ -264,8 +261,12 @@ function GroupPreview({ group, isOpen, onToggle, onChild }: { group: Group; isOp
   const last = group.works[group.works.length - 1];
   return (
     <article className="preview group-preview" key={group.key} aria-live="polite">
-      <div className="mosaic" aria-hidden="true">
-        {group.works.slice(-9).map((w) => <img key={w.id} className="mini" src={photoUrl(w)} alt="" />)}
+      <div className="mosaic" data-count={Math.min(group.works.length, 9)} aria-hidden="true">
+        {group.works.slice(-9).map((w) => (
+          <a key={w.id} href={`#/work/${w.id}`} tabIndex={-1}>
+            <img className="mini" src={photoUrl(w)} alt="" />
+          </a>
+        ))}
       </div>
       <div className="preview-info">
         <p className="when">
