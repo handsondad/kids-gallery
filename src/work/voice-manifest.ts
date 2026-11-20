@@ -3,6 +3,7 @@ export const VOICE_CLIPS: Readonly<Record<string, { readonly hash: string; reado
   "cat-fan": { hash: "4a7db5aa", seconds: 10.15 },
   "clay-flower": { hash: "2f0e79f4", seconds: 12.1 },
   "clay-turtle": { hash: "f430050c", seconds: 7.22 },
+  "cup-monster": { hash: "bd5bce98", seconds: 8.9 },
   "dot-chick": { hash: "5d5b1661", seconds: 7.01 },
   "foam-wreath": { hash: "311ba877", seconds: 10.15 },
   "googly-monsters": { hash: "1151806e", seconds: 9.72 },
@@ -14,4 +15,5 @@ export const VOICE_CLIPS: Readonly<Record<string, { readonly hash: string; reado
   "paper-hedgehog": { hash: "d2621751", seconds: 9.98 },
   "paper-lollipop": { hash: "19c20c7d", seconds: 10.01 },
   "pink-butterfly": { hash: "c858b5b1", seconds: 8.28 },
+  "yellow-chick": { hash: "feedcea0", seconds: 7.06 },
 };
