@@ -1,4 +1,5 @@
 import type { Work } from "../work/types.ts";
+import clayMittens from "./clay-mittens/work.ts";
 import yellowChick from "./yellow-chick/work.ts";
 import cupMonster from "./cup-monster/work.ts";
 import paperHedgehog from "./paper-hedgehog/work.ts";
@@ -17,7 +18,7 @@ import operaMask from "./opera-mask/work.ts";
 import clayFlower from "./clay-flower/work.ts";
 
 /** 画廊里的作品，按收进来的先后排；首页按 when.date 重新排 */
-export const WORKS: readonly Work[] = [operaMask, clayFlower, foamWreath, paperButterfly, leafLion, googlyMonsters, paperLollipop, mooncakeBunnyBag, midAutumnBunny, clayTurtle, pinkButterfly, catFan, dotChick, paperHedgehog, cupMonster, yellowChick];
+export const WORKS: readonly Work[] = [operaMask, clayFlower, foamWreath, paperButterfly, leafLion, googlyMonsters, paperLollipop, mooncakeBunnyBag, midAutumnBunny, clayTurtle, pinkButterfly, catFan, dotChick, paperHedgehog, cupMonster, yellowChick, clayMittens];
 
 export function workById(id: string): Work | undefined {
   return WORKS.find((w) => w.id === id);

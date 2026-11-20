@@ -2,6 +2,7 @@
 export const VOICE_CLIPS: Readonly<Record<string, { readonly hash: string; readonly seconds: number }>> = {
   "cat-fan": { hash: "4a7db5aa", seconds: 10.15 },
   "clay-flower": { hash: "2f0e79f4", seconds: 12.1 },
+  "clay-mittens": { hash: "2a341414", seconds: 12.12 },
   "clay-turtle": { hash: "f430050c", seconds: 7.22 },
   "cup-monster": { hash: "bd5bce98", seconds: 8.9 },
   "dot-chick": { hash: "5d5b1661", seconds: 7.01 },
