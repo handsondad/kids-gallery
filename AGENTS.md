@@ -21,8 +21,9 @@
 | `npm test` | 全部测试 |
 | `npm run check [-- <作品id>]` | 检查作品内容和照片 |
 | `npm run work:new -- <id> [照片]` | 新收一件作品（建目录、登记、处理照片） |
-| `npm run photo -- <id> <照片>` | 换照片：转正、缩到长边 1600、去掉拍摄信息 |
-| `npm run snapshot [-- home <id>...] [--width 390]` | 截成 PNG，放在 `snapshots/` |
+| `npm run photo -- <id> <照片>` | 换照片：转正、缩到长边 1600、去掉拍摄信息，顺便出缩略图 |
+| `npm run photo -- --thumbs [id...]` | 用处理好的照片重出缩略图和宽高表 |
+| `npm run snapshot [-- home <id>...] [--width 390]` | 截成 PNG，放在 `snapshots/`；`-- og` 重出分享预览图 `public/og.jpg` |
 | `npm run font` | 按源码里用到的字重新截取字体 |
 | `npm run voice [-- <作品id>]` | 用 edge-tts 给 `intro` 配上小念的声音（只配新的和改过字的） |
 | `npm run build` | 生产构建，输出到 `dist/` |
@@ -45,8 +46,10 @@
 - `src/work/voice.ts`：小念的声音和配音指纹，「听小念讲」按钮和配音工具共用
 - `src/pages/IntroBubble.tsx`：「小念讲」气泡和播放按钮（配过音、字没改过才出按钮）
 - `tools/voice.mjs`：配音，输出 `public/voice/<作品id>.mp3` 和 `src/work/voice-manifest.ts`（生成的，别手改）
-- `public/works/<id>/photo.jpg`：处理过的照片
-- `public/fonts/gallery.woff`：站酷快乐体子集（OFL）
+- `public/works/<id>/photo.jpg`：处理过的照片；`thumb.jpg`：短边 360 的缩略图，首页绳子和照片墙用
+- `src/work/photo-manifest.ts`：每张照片的宽高，作品页先按比例占位（`npm run photo` 生成，别手改）
+- `public/og.jpg`：分享链接的预览图（`npm run snapshot -- og`）
+- `public/fonts/gallery.woff2`：站酷快乐体子集（OFL）
 - `tools/photo.mjs`：用本机浏览器的画布重画照片，顺便去掉 Exif；也给检查器读宽高和拍摄信息
 - `tools/snapshot.mjs`：无头浏览器截 PNG
 - `tests/gallery-rules.mjs`：内容检查器
@@ -60,7 +63,7 @@
 3. 和小念聊，记进 `notes.md`（见 curate skill）
 4. 写 `work.ts`，跑 `npm run check -- <id>` 直到通过
 5. `npm run font`（加了新汉字就要跑）
-6. `intro` 念给小念听过、他点头了，跑 `npm run voice -- <id>`（要联网，需要 `python -m pip install edge-tts` 和 ffmpeg）
+6. `intro` 念给小念听过、他点头了，`work.ts` 加 `heard: true`，跑 `npm run voice -- <id>`（要联网，需要 `python -m pip install edge-tts` 和 ffmpeg）
 7. `npm run snapshot -- home <id>` 和 `npm run snapshot -- home <id> --width 390`，打开 `snapshots/` 看图
 8. `npm run typecheck && npm test && npm run build`
 
@@ -73,7 +76,7 @@
   - 照片一律经过 `npm run photo`（或 `work:new` 带照片），检查器会拦带 Exif 的照片：里面可能有拍摄时间和 GPS。
   - 不确定能不能公开，先问大人。
 - **小念的原话**：`said` 一字不改；没问到就不写，不要替他编。大人的话写进 `about`。
-- **小念讲（`intro`）**：用小念的口吻介绍作品，可以由大人照 `notes.md` 代写，但只写真发生过的事；短句、孩子的说法（「我」「红脸蛋」「差点赶不上呢」），≤60 字。写完念给小念听，他点头才配音发布；在 `notes.md` 里记一笔是谁写的、他听过没有。
+- **小念讲（`intro`）**：用小念的口吻介绍作品，可以由大人照 `notes.md` 代写，但只写真发生过的事；短句、孩子的说法（「我」「红脸蛋」「差点赶不上呢」），≤60 字。写完念给小念听，他点头才配音发布；在 `notes.md` 里记一笔是谁写的、他听过没有，听过点头了在 `work.ts` 写 `heard: true`（没写的 `npm run check` 和 `npm run voice` 会提醒）。
 - **配音**：只用合成的声音，小念是 `zh-CN-YunxiaNeural`，和漫画书同一个（`src/work/voice.ts`）。小念自己录的声音放 `private/`，要公开先问大人。
 - **日子**：`when.date` 写做出来的那天；不知道就问，别猜。大人只记得大概的，加 `approx: true`（页面只显示到月），怎么定的写进 `notes.md`。同一天漫画书里有故事，写 `story: "<故事id>"`。
 - **素材许可**：站酷快乐体是 OFL；新素材要在 `THIRD_PARTY_NOTICES.md` 写明来源。
@@ -82,7 +85,7 @@
 ## 已知的坑
 
 - **`.ts` 扩展名**：Node 直接跑 `.ts`，所以被测试导入的文件相互导入时要写 `.ts` 扩展名。`tsconfig` 开了 `allowImportingTsExtensions`。
-- **字体缺字**：页面上出现方框，跑 `npm run font` 再刷新。需要 `python -m pip install fonttools`。
+- **字体缺字**：页面上出现方框，跑 `npm run font` 再刷新。需要 `python -m pip install fonttools brotli`（woff2 要 brotli）。
 - **截图和处理照片要用本机 Edge/Chrome**：`puppeteer-core` 不自带浏览器；找不到时设环境变量 `BROWSER_PATH`。
 - **HEIC**：浏览器解不开手机的 HEIC，先导出成 JPG。
 - **改了 `intro` 没重配**：播放按钮会自己藏起来（指纹对不上），`npm run check` 会提示，跑 `npm run voice` 就好。

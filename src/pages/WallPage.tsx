@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import type { Work } from "../work/types.ts";
 import { KIND_NAMES, creditLine } from "../work/vocab.ts";
-import { WORKS, photoUrl } from "../works/index.ts";
+import { WORKS, photoUrl, thumbUrl } from "../works/index.ts";
 import { IntroBubble } from "./IntroBubble.tsx";
 import {
   buildTree, byDate, COMPACT, findGroup, layoutLine, pathTo, pathToWork, sizeFor, toggleOpen, visibleSlots,
@@ -217,7 +217,7 @@ export function WallPage() {
                       <span className="card" style={{ background: color, ["--tilt" as string]: `${tilt}deg` }}>
                         <span className="bundle-name">{g.name}</span>
                         <span className="stack" aria-hidden="true">
-                          {g.works.slice(-4).map((w) => <img key={w.id} className="mini" src={photoUrl(w)} alt="" loading="lazy" draggable={false} />)}
+                          {g.works.slice(-4).map((w) => <img key={w.id} className="mini" src={thumbUrl(w)} alt="" loading="lazy" draggable={false} />)}
                         </span>
                         <span className="bundle-count">{g.works.length} 件 · 点开</span>
                       </span>
@@ -231,7 +231,7 @@ export function WallPage() {
                     onClick={() => setPicked(key)} onDoubleClick={() => { location.hash = `#/work/${w.id}`; }}>
                     <span className="peg" aria-hidden="true" />
                     <span className="card" style={{ background: color, ["--tilt" as string]: `${tilt}deg` }}>
-                      <img className="thumb" src={photoUrl(w)} alt="" loading="lazy" draggable={false} />
+                      <img className="thumb" src={thumbUrl(w)} alt="" loading="lazy" draggable={false} />
                       <span className="day">{whenShort(w.when)}</span>
                       <span className="name">{w.title}</span>
                     </span>
@@ -264,7 +264,7 @@ function GroupPreview({ group, isOpen, onToggle, onChild }: { group: Group; isOp
       <div className="mosaic" data-count={Math.min(group.works.length, 9)} aria-hidden="true">
         {group.works.slice(-9).map((w) => (
           <a key={w.id} href={`#/work/${w.id}`} tabIndex={-1}>
-            <img className="mini" src={photoUrl(w)} alt="" />
+            <img className="mini" src={thumbUrl(w)} alt="" />
           </a>
         ))}
       </div>

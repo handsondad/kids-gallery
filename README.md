@@ -37,7 +37,8 @@ npm run dev
 | `npm test` | 测试 |
 | `npm run check` | 检查作品内容、照片和配音 |
 | `npm run work:new -- <id> [照片]` | 新收一件作品 |
-| `npm run photo -- <id> <照片>` | 换照片（转正、缩小、去掉拍摄信息） |
+| `npm run photo -- <id> <照片>` | 换照片（转正、缩小、去掉拍摄信息，顺便出缩略图） |
+| `npm run photo -- --thumbs` | 重出所有缩略图和宽高表 |
 | `npm run voice` | 给「小念讲」配音（edge-tts，只配新的和改过字的） |
 | `npm run font` | 重新截取字体子集 |
 | `npm run snapshot` | 截成 PNG（加 `--width 390` 看手机） |
@@ -46,7 +47,7 @@ npm run dev
 只看页面、改代码用不着别的。收新作品时还要：
 
 - 本机的 Edge 或 Chrome（处理照片、截图）
-- `python -m pip install fonttools`（`npm run font`）
+- `python -m pip install fonttools brotli`（`npm run font`）
 - `python -m pip install edge-tts` 和 ffmpeg（`npm run voice`，要联网）
 
 ## 收一件新作品
@@ -58,7 +59,7 @@ npm run dev
 1. 照片放 `private/`（不进仓库），确认没有脸、校名、门牌
 2. `npm run work:new -- <id> private/<照片>.jpg`
 3. 和小念聊，记进 `src/works/<id>/notes.md`；写 `work.ts`，`npm run check -- <id>`
-4. 写「小念讲」（`intro`），念给小念听，他点头了 `npm run voice -- <id>`
+4. 写「小念讲」（`intro`），念给小念听，他点头了在 `work.ts` 加 `heard: true`，`npm run voice -- <id>`
 5. `npm run font`，`npm run snapshot -- home <id>` 看图
 6. `npm run typecheck && npm test && npm run build`，推到 `main`
 

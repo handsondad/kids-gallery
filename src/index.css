@@ -1,7 +1,7 @@
 /* 颜色、圆角、晾衣绳和《小念家的漫画书》保持一个系列；字统一用站酷快乐体（public/fonts/gallery.woff，npm run font 生成） */
 @font-face {
   font-family: "GalleryFont";
-  src: url("/fonts/gallery.woff") format("woff");
+  src: url("/fonts/gallery.woff2") format("woff2");
   font-display: block;
 }
 
@@ -283,6 +283,9 @@ button, a { font-family: inherit; }
   transform: rotate(-1deg); animation: preview-in 260ms ease-out; touch-action: pan-y;
 }
 .frame img { display: block; width: auto; max-width: 100%; max-height: 70vh; height: auto; margin: 0 auto; }
+/* 知道照片宽高（photo-manifest.ts）就先按比例把框撑好，照片还没下完，下面的字也不会跳 */
+.frame.sized { --pad-x: 28px; width: min(760px, 100%, calc(70vh * var(--ratio) + var(--pad-x)), calc(var(--w) * 1px + var(--pad-x))); }
+.frame.sized img { width: 100%; max-height: none; aspect-ratio: var(--ratio); }
 .frame .tape { position: absolute; top: -10px; width: 78px; height: 22px; border-radius: 2px; background: rgba(246, 221, 152, 0.85); pointer-events: none; }
 .frame .tape.left { left: -18px; transform: rotate(-32deg); }
 .frame .tape.right { right: -18px; transform: rotate(32deg); }
@@ -300,6 +303,7 @@ button, a { font-family: inherit; }
 @media (max-width: 640px) {
   .plaque .mobile-by { display: inline; }
   .frame { padding: 10px 10px 28px; transform: none; }
+  .frame.sized { --pad-x: 20px; }
   .frame .tape { width: 58px; height: 20px; top: -8px; }
   .frame .tape.left { left: -4px; }
   .frame .tape.right { right: -4px; }

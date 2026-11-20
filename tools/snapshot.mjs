@@ -3,6 +3,7 @@
 //   npm run snapshot                       首页 + 每一件作品
 //   npm run snapshot -- home clay-flower   只截首页和这一件
 //   npm run snapshot -- --width 390        手机宽度（默认 1000）
+//   npm run snapshot -- og                 重出分享链接用的预览图 public/og.jpg（1200×630，首页最上面那块）
 //
 // 会自己起一个 Vite 开发服务器；已经开着的话可以加 --url http://localhost:5173/ 直接用。
 import { mkdirSync } from "node:fs";
@@ -29,7 +30,7 @@ async function main() {
   const opts = parseArgs(process.argv.slice(2));
   const targets = opts.targets.length ? opts.targets : ["home", ...WORKS.map((w) => w.id)];
   for (const t of targets) {
-    if (t !== "home" && !WORKS.some((w) => w.id === t)) throw new Error(`没有作品 ${t}，看看 src/works/ 下的目录名`);
+    if (t !== "home" && t !== "og" && !WORKS.some((w) => w.id === t)) throw new Error(`没有作品 ${t}，看看 src/works/ 下的目录名`);
   }
 
   let server = null;
@@ -53,13 +54,21 @@ async function main() {
     page.on("requestfailed", (req) => problems.push(`没加载出来：${req.url()}`));
     page.on("response", (res) => { if (res.status() >= 400) problems.push(`${res.status()}：${res.url()}`); });
     for (const t of targets) {
-      await page.goto(`${base}${t === "home" ? "#/" : `#/work/${t}`}`, { waitUntil: "networkidle0" });
+      const og = t === "og";
+      if (og) await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 1 });
+      await page.goto(`${base}${t === "home" || og ? "#/" : `#/work/${t}`}`, { waitUntil: "networkidle0" });
       await page.evaluate(async () => {
         await document.fonts.ready;
         // 绳子上滚出屏幕的缩略图是懒加载的，等不来，最多等 5 秒
         const loaded = Promise.all([...document.images].map((img) => img.complete || new Promise((ok) => { img.onload = img.onerror = ok; })));
         await Promise.race([loaded, new Promise((ok) => setTimeout(ok, 5000))]);
       });
+      if (og) {
+        await page.screenshot({ path: join(root, "public/og.jpg"), type: "jpeg", quality: 85 });
+        await page.setViewport({ width: opts.width, height: 800, deviceScaleFactor: 1 });
+        console.log("public/og.jpg");
+        continue;
+      }
       const file = `${t}${opts.width === 1000 ? "" : `-${opts.width}`}.png`;
       await page.screenshot({ path: join(outDir, file), fullPage: true });
       console.log(`snapshots/${file}`);

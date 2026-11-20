@@ -45,7 +45,7 @@ description: >-
 npm run work:new -- <id> private/<照片>.jpg
 ```
 
-id 按作品起，小写英文和短横线：`rainbow-fish`、`moon-car`。照片会被转正、缩到长边 1600、存成 `public/works/<id>/photo.jpg`，拍摄时间和 GPS 都去掉了。之后要换照片：`npm run photo -- <id> <照片>`。
+id 按作品起，小写英文和短横线：`rainbow-fish`、`moon-car`。照片会被转正、缩到长边 1600、存成 `public/works/<id>/photo.jpg`，拍摄时间和 GPS 都去掉了；同时出一张短边 360 的 `thumb.jpg` 给首页绳子用，宽高记进 `src/work/photo-manifest.ts`。之后要换照片：`npm run photo -- <id> <照片>`。
 
 ### 3. 和小念聊
 
@@ -93,7 +93,7 @@ const work: Work = {
 - 只写真发生过的事和照片上看得到的东西，不编情节
 - ≤60 字，念出来十几秒
 
-写完念给小念听，他点头了（或者照他改的字改），在 `notes.md` 的「小念讲」下面记一笔，再配音：
+写完念给小念听，他点头了（或者照他改的字改），在 `notes.md` 的「小念讲」下面记一笔，`work.ts` 加 `heard: true`，再配音：
 
 ```bash
 npm run voice -- <id>      # 改了字重跑，只会重配改过的

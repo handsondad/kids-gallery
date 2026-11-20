@@ -1,8 +1,9 @@
 // 新收一件作品：建目录骨架，登记到 src/works/index.ts；给了照片就顺便处理好。
 // 用法：npm run work:new -- <id> [照片路径]
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { TEMPLATE_TEXT } from "../tests/gallery-rules.mjs";
 import { processPhoto, sourceMime } from "./photo.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -31,17 +32,33 @@ if (photo) {
 
 const today = new Date();
 const date = [today.getFullYear(), today.getMonth() + 1, today.getDate()].map((n) => String(n).padStart(2, "0")).join("-");
+const dateText = `${today.getFullYear()} 年 ${today.getMonth() + 1} 月 ${today.getDate()} 日`;
+const photoNote = photo ? `原图在 \`${relative(root, resolve(photo)).replaceAll("\\", "/")}\`` : "还没有照片";
 
 mkdirSync(dir, { recursive: true });
+// 和 curate skill 里 notes.md 的几段一一对应
 writeFileSync(join(dir, "notes.md"), `# ${id}
 
-## 那天的事（${date}）
+## 那天的事（${dateText}）
 
 - 
+- 谁一起做的还不知道，先只写小念；大人说了再补 \`by\`
+
+## 照片
+
+- ${photoNote}
+
+## 日子
+
+- （做出来的那天是怎么知道的；只记得大概就写怎么定的，work.ts 加 approx: true）
 
 ## 小念说
 
-- 
+- （还没记）
+
+## 小念讲（intro）
+
+- （谁写的；念给小念听过没有，点头了在 work.ts 加 heard: true）
 
 ## 不写的
 
@@ -52,17 +69,18 @@ writeFileSync(join(dir, "work.ts"), `import type { Work } from "../../work/types
 
 const work: Work = {
   id: "${id}",
-  title: "新作品",
-  about: "一句话来历。",
+  title: "${TEMPLATE_TEXT.title}",
+  about: "${TEMPLATE_TEXT.about}",
   // said: "小念的原话，不改字",
   // intro: "用小念的口吻介绍，≤60 字；念给他听过再 npm run voice",
+  // heard: true, // 小念听过 intro、点头了
   // 做出来的那天，首页时间绳按这个排
   when: { date: "${date}" },
   kind: "draw",
   medium: "蜡笔",
   by: ["nian"],
   photo: "photo.jpg",
-  alt: "照片上是什么",
+  alt: "${TEMPLATE_TEXT.alt}",
 };
 
 export default work;

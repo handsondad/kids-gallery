@@ -1,7 +1,7 @@
-// 从完整的站酷快乐体里只截出网站用到的字，生成 public/fonts/gallery.woff。
+// 从完整的站酷快乐体里只截出网站用到的字，生成 public/fonts/gallery.woff2。
 // 完整字库 1.5 MB，截完一般只有几十 KB。作品或页面加了新字，就重跑一次：npm run font
 //
-// 需要 Python 和 fontTools：python -m pip install fonttools
+// 需要 Python 和 fontTools（woff2 还要 brotli）：python -m pip install fonttools brotli
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -13,6 +13,7 @@ const source = join(cacheDir, "ZCOOLKuaiLe-Regular.ttf");
 const url = "https://github.com/google/fonts/raw/main/ofl/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf";
 const outDir = join(root, "public/fonts");
 export const CHARS_FILE = join(outDir, "gallery-chars.txt");
+const output = join(outDir, "gallery.woff2");
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
@@ -52,11 +53,11 @@ async function main() {
   writeFileSync(CHARS_FILE, chars);
   execFileSync("python", [
     "-m", "fontTools.subset", source,
-    `--text-file=${CHARS_FILE}`, "--flavor=woff", `--output-file=${join(outDir, "gallery.woff")}`,
+    `--text-file=${CHARS_FILE}`, "--flavor=woff2", `--output-file=${output}`,
     "--layout-features=*",
   ], { stdio: "inherit" });
-  const size = statSync(join(outDir, "gallery.woff")).size;
-  console.log(`${[...chars].length} 个字 → public/fonts/gallery.woff（${(size / 1024).toFixed(0)} KB）`);
+  const size = statSync(output).size;
+  console.log(`${[...chars].length} 个字 → public/fonts/gallery.woff2（${(size / 1024).toFixed(0)} KB）`);
 }
 
 const entry = process.argv[1] && pathToFileURL(resolve(process.argv[1])).href;

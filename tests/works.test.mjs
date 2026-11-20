@@ -5,7 +5,7 @@ import { WORKS } from "../src/works/index.ts";
 import { creditLine } from "../src/work/vocab.ts";
 import { introHash } from "../src/work/voice.ts";
 import { CHARS_FILE, collect } from "../tools/font/subset.mjs";
-import { checkWork } from "./gallery-rules.mjs";
+import { checkWork, TEMPLATE_TEXT } from "./gallery-rules.mjs";
 
 test("字体子集包含页面上用到的每个字（缺了跑 npm run font）", () => {
   const have = new Set(readFileSync(CHARS_FILE, "utf8"));
@@ -32,6 +32,13 @@ test("检查器拦得住：没有小念、外人署名、字太多", () => {
   assert.match(problems, /要有小念/);
   assert.match(problems, /grandma/);
   assert.match(problems, /title：超过/);
+});
+
+test("检查器拦得住：work:new 的占位字没改、没有 intro 却写了 heard", () => {
+  const bad = { ...WORKS[0], ...TEMPLATE_TEXT, intro: undefined, heard: true };
+  const problems = checkWork(bad).join("\n");
+  for (const key of Object.keys(TEMPLATE_TEXT)) assert.match(problems, new RegExp(`${key}：还是 work:new 的占位字`));
+  assert.match(problems, /heard 就不用写/);
 });
 
 test("配音指纹：改一个字、换一个声音就过期", () => {

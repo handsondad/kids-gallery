@@ -18,6 +18,8 @@ export type Work = {
    * 可以是大人照着 notes.md 代写的，但只写真发生过的事，写完念给小念听，他点头才发布
    */
   readonly intro?: string;
+  /** intro 念给小念听过、他点头了才写 true；没写的 npm run check 会提醒 */
+  readonly heard?: true;
   /** 做出来的那天。首页的时间绳按这个排 */
   readonly when: {
     /** YYYY-MM-DD */

@@ -1,5 +1,6 @@
-import { useEffect, useRef, type TouchEvent } from "react";
+import { useEffect, useRef, type CSSProperties, type TouchEvent } from "react";
 import type { Work } from "../work/types.ts";
+import { PHOTO_SIZES } from "../work/photo-manifest.ts";
 import { KIND_NAMES, creditLine } from "../work/vocab.ts";
 import { WORKS, photoUrl, storyUrl } from "../works/index.ts";
 import { IntroBubble } from "./IntroBubble.tsx";
@@ -20,6 +21,14 @@ export function WorkPage({ work }: { work: Work }) {
     wallMemory.open = pathToWork(TREE, work.id);
     wallMemory.picked = `w:${work.id}`;
   }, [work.id]);
+
+  // 先把上一件、下一件的照片下好，左右划过去就不是一片白
+  useEffect(() => {
+    for (const w of [prev, next]) if (w) new Image().src = photoUrl(w);
+  }, [prev, next]);
+
+  const size = PHOTO_SIZES[work.id];
+  const frameStyle = size && ({ "--ratio": size.width / size.height, "--w": size.width } as CSSProperties);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -57,10 +66,10 @@ export function WorkPage({ work }: { work: Work }) {
       </div>
 
       <div className="viewer" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-        <figure className="frame" key={work.id}>
+        <figure className={size ? "frame sized" : "frame"} style={frameStyle || undefined} key={work.id}>
           <span className="tape left" aria-hidden="true" />
           <span className="tape right" aria-hidden="true" />
-          <img src={photoUrl(work)} alt={work.alt} />
+          <img src={photoUrl(work)} alt={work.alt} width={size?.width} height={size?.height} />
         </figure>
 
         <section className="plaque">

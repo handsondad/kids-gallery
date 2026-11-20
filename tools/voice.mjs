@@ -88,6 +88,8 @@ for (const [id, text] of todo) {
   }
 }
 save();
+const unheard = todo.filter(([id]) => clips[id] && !WORKS.find((w) => w.id === id)?.heard).map(([id]) => id);
+if (unheard.length) console.log(`提醒：小念还没听过 ${unheard.join("、")}；念给他听，点头了在 work.ts 加 heard: true`);
 if (failed) {
   console.error(`失败 ${failed} 件，再跑一次会只补失败的`);
   process.exitCode = 1;

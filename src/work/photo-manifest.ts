@@ -1,0 +1,20 @@
+// npm run photo 生成，别手改。key 是作品 id，对应 public/works/<id>/photo.jpg 的宽高
+export const PHOTO_SIZES: Readonly<Record<string, { readonly width: number; readonly height: number }>> = {
+  "cat-fan": { width: 1200, height: 1600 },
+  "clay-flower": { width: 1205, height: 1190 },
+  "clay-mittens": { width: 1060, height: 1600 },
+  "clay-turtle": { width: 1200, height: 1600 },
+  "cup-monster": { width: 1080, height: 1440 },
+  "dot-chick": { width: 1200, height: 1600 },
+  "foam-wreath": { width: 1200, height: 1600 },
+  "googly-monsters": { width: 1276, height: 1446 },
+  "leaf-lion": { width: 1600, height: 1200 },
+  "mid-autumn-bunny": { width: 1200, height: 1600 },
+  "mooncake-bunny-bag": { width: 1200, height: 1600 },
+  "opera-mask": { width: 1071, height: 1255 },
+  "paper-butterfly": { width: 1440, height: 810 },
+  "paper-hedgehog": { width: 1600, height: 1200 },
+  "paper-lollipop": { width: 1200, height: 1600 },
+  "pink-butterfly": { width: 1200, height: 1600 },
+  "yellow-chick": { width: 1080, height: 1440 },
+};
