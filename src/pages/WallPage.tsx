@@ -217,7 +217,7 @@ export function WallPage() {
                       <span className="card" style={{ background: color, ["--tilt" as string]: `${tilt}deg` }}>
                         <span className="bundle-name">{g.name}</span>
                         <span className="stack" aria-hidden="true">
-                          {g.works.slice(-4).map((w) => <img key={w.id} className="mini" src={thumbUrl(w)} alt="" loading="lazy" draggable={false} />)}
+                          {g.works.slice(-4).map((w) => <Mini key={w.id} work={w} photo={false} />)}
                         </span>
                         <span className="bundle-count">{g.works.length} 件 · 点开</span>
                       </span>
@@ -256,6 +256,13 @@ export function WallPage() {
   );
 }
 
+/** 收着的一年、一月只写作品名的第一个字（photo=false）：首页一打开不用先下一堆照片，点开哪一格再读哪一格 */
+function Mini({ work, photo }: { work: Work; photo: boolean }) {
+  return photo
+    ? <img className="mini" src={thumbUrl(work)} alt="" loading="lazy" draggable={false} />
+    : <span className="mini letter">{work.title.match(/[\p{L}\p{N}]/u)?.[0]}</span>;
+}
+
 function GroupPreview({ group, isOpen, onToggle, onChild }: { group: Group; isOpen: boolean; onToggle: () => void; onChild: (g: Group) => void }) {
   const first = group.works[0];
   const last = group.works[group.works.length - 1];
@@ -264,9 +271,10 @@ function GroupPreview({ group, isOpen, onToggle, onChild }: { group: Group; isOp
       <div className="mosaic" data-count={Math.min(group.works.length, 9)} aria-hidden="true">
         {group.works.slice(-9).map((w) => (
           <a key={w.id} href={`#/work/${w.id}`} tabIndex={-1}>
-            <img className="mini" src={thumbUrl(w)} alt="" />
+            <Mini work={w} photo={isOpen} />
           </a>
         ))}
+        {!isOpen && <span className="mosaic-hint">在绳子上打开，照片才挂上来</span>}
       </div>
       <div className="preview-info">
         <p className="when">
